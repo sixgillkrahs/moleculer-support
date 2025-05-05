@@ -1,9 +1,14 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 const locationResource = require("../defined/locations");
-import randomize from 'randomatic';
-import jsonDiff from 'json-diff';
-import _ from 'lodash';
-import mongoose from 'mongoose';
-import dateFrm from 'dateformat';
+const randomatic_1 = __importDefault(require("randomatic"));
+const json_diff_1 = __importDefault(require("json-diff"));
+const lodash_1 = __importDefault(require("lodash"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const dateformat_1 = __importDefault(require("dateformat"));
 class FunctionHelper {
     /** Convert string to unicode
      * @param str string value
@@ -30,7 +35,7 @@ class FunctionHelper {
      */
     generateRandomNumber(length, startString = '', endString = '', delimiter = '') {
         try {
-            const numberGen = randomize('0', length, {});
+            const numberGen = (0, randomatic_1.default)('0', length, {});
             if (!endString) {
                 return `${startString}${delimiter}${numberGen}`;
             }
@@ -49,8 +54,8 @@ class FunctionHelper {
      */
     generateRandomUpperString(length, startString = '', endString = '', delimiter = '') {
         try {
-            const stringGen = randomize('A', length, {});
-            if (_.isEmpty(endString)) {
+            const stringGen = (0, randomatic_1.default)('A', length, {});
+            if (lodash_1.default.isEmpty(endString)) {
                 return `${startString}${delimiter}${stringGen}`;
             }
             return `${startString}${delimiter}${stringGen}${delimiter}${endString}`;
@@ -70,7 +75,7 @@ class FunctionHelper {
      */
     generateRandomStringCustom(pattern, length, option = {}, startString = '', endString = '', delimiter = '') {
         try {
-            const stringGen = randomize(pattern, length, option);
+            const stringGen = (0, randomatic_1.default)(pattern, length, option);
             return `${startString}${delimiter}${stringGen}${delimiter}${endString}`;
         }
         catch (e) {
@@ -103,7 +108,7 @@ class FunctionHelper {
      * @output boolean value
      */
     jsonCompare(jsonObj, compareJsonObj) {
-        const result = jsonDiff.diffString(jsonObj, compareJsonObj);
+        const result = json_diff_1.default.diffString(jsonObj, compareJsonObj);
         return !result;
     }
     /** Find a character in a string
@@ -160,7 +165,7 @@ class FunctionHelper {
     // Get current date format from date timestamp value
     getCurrentDateByFormat(date = Date.now(), dateFm = "yyyymmdd-hhMMss") {
         try {
-            return dateFrm(date, dateFm);
+            return (0, dateformat_1.default)(date, dateFm);
         }
         catch (e) {
             return "";
@@ -173,7 +178,7 @@ class FunctionHelper {
                 return null;
             }
             const timeStamp = parseInt(inputParams, 10);
-            if (_.isNumber(timeStamp)) {
+            if (lodash_1.default.isNumber(timeStamp)) {
                 return new Date(timeStamp);
             }
             return new Date(inputParams);
@@ -197,7 +202,7 @@ class FunctionHelper {
     }
     // Convert string value to number
     convertStringToNumber(strNum) {
-        if (!strNum || _.isEmpty(strNum)) {
+        if (!strNum || lodash_1.default.isEmpty(strNum)) {
             return null;
         }
         return Number(strNum.replace(/[^0-9\.]+/g, ""));
@@ -206,13 +211,13 @@ class FunctionHelper {
     convertDateTimeToStringISO(dateTime, numberDayAgo = 0, isOnlyGetDate = true) {
         let strDate = "";
         let dateObj;
-        if (_.isNumber(dateTime)) {
+        if (lodash_1.default.isNumber(dateTime)) {
             dateObj = new Date(dateTime);
         }
         else {
             dateObj = new Date(dateTime);
         }
-        if (numberDayAgo && _.isNumber(numberDayAgo)) {
+        if (numberDayAgo && lodash_1.default.isNumber(numberDayAgo)) {
             dateObj = new Date(dateObj.getTime() - numberDayAgo * 864e5); // trừ đi số ngày
         }
         if (isOnlyGetDate) {
@@ -253,11 +258,11 @@ class FunctionHelper {
         if (date === null) {
             return "";
         }
-        if (_.isNumber(date)) {
-            return dateFrm(new Date(date), "yymdhMs");
+        if (lodash_1.default.isNumber(date)) {
+            return (0, dateformat_1.default)(new Date(date), "yymdhMs");
         }
-        if (_.isDate(date)) {
-            return dateFrm(date, "yymdhMs");
+        if (lodash_1.default.isDate(date)) {
+            return (0, dateformat_1.default)(date, "yymdhMs");
         }
         return "";
     }
@@ -280,10 +285,10 @@ class FunctionHelper {
     // Convert value to mongoId
     convertToMongoId(params) {
         if (Array.isArray(params)) {
-            return params.map((id) => new mongoose.Types.ObjectId(id));
+            return params.map((id) => new mongoose_1.default.Types.ObjectId(id));
         }
         if (typeof params === "string") {
-            return new mongoose.Types.ObjectId(params);
+            return new mongoose_1.default.Types.ObjectId(params);
         }
         return params;
     }
@@ -323,15 +328,15 @@ class FunctionHelper {
         let provinceText = province;
         let districtText = district;
         let wardText = ward;
-        if (_.isNumber(province) && province > 0) {
+        if (lodash_1.default.isNumber(province) && province > 0) {
             const provinceObj = locationResource.LIST_PROVINCE.find((x) => x.id === province);
             provinceText = provinceObj ? provinceObj.name : "";
         }
-        if (_.isNumber(district) && district > 0) {
+        if (lodash_1.default.isNumber(district) && district > 0) {
             const districtObj = locationResource.LIST_DISTRICT.find((x) => x.id === district);
             districtText = districtObj ? districtObj.name : "";
         }
-        if (_.isNumber(ward) && ward > 0) {
+        if (lodash_1.default.isNumber(ward) && ward > 0) {
             const wardObj = locationResource.LIST_WARD.find((x) => x.id === ward);
             wardText = wardObj ? wardObj.name : "";
         }
@@ -341,4 +346,4 @@ class FunctionHelper {
         return fullAddress;
     }
 }
-export default FunctionHelper;
+exports.default = FunctionHelper;
