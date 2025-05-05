@@ -39,10 +39,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const lodash_1 = __importDefault(require("lodash"));
 class MongoFuncHelper {
-    async $save(model, entParam) {
+    static async $save(model, entParam) {
         return model.create(entParam);
     }
-    async $updateOne(model, conditionObj, newObj) {
+    static async $updateOne(model, conditionObj, newObj) {
         const result = await model.updateOne(conditionObj, newObj);
         return {
             ok: result.acknowledged ? 1 : 0,
@@ -50,7 +50,7 @@ class MongoFuncHelper {
             nModified: result.modifiedCount,
         };
     }
-    async $updateSet(model, filterObj, setObj) {
+    static async $updateSet(model, filterObj, setObj) {
         const result = await model.updateOne(filterObj, setObj);
         return {
             ok: result.acknowledged ? 1 : 0,
@@ -58,17 +58,17 @@ class MongoFuncHelper {
             nModified: result.modifiedCount,
         };
     }
-    async $findOneAndUpdateOrCreate(model, entParam, filter = {}) {
+    static async $findOneAndUpdateOrCreate(model, entParam, filter = {}) {
         const options = { upsert: true, new: true, useFindAndModify: false, setDefaultsOnInsert: true };
         return await model.findOneAndUpdate(filter, entParam, options);
     }
-    async $getAll(model, filter = {}, sort = {}, select = {}) {
+    static async $getAll(model, filter = {}, sort = {}, select = {}) {
         const result = await model.find(filter, select).sort(sort).lean();
         if (!result || lodash_1.default.isEmpty(result))
             return [];
         return result;
     }
-    async $getById(model, _id, isWithOutCheckDelete = false, select = {}) {
+    static async $getById(model, _id, isWithOutCheckDelete = false, select = {}) {
         try {
             let id = "";
             if (mongoose_1.default.isValidObjectId(_id) && typeof _id === "object") {
@@ -89,12 +89,12 @@ class MongoFuncHelper {
             return null;
         }
     }
-    async $list(model, query = {}, sort = {}, skip = 0, limit = 20, select = {}) {
+    static async $list(model, query = {}, sort = {}, skip = 0, limit = 20, select = {}) {
         skip = Number.isNaN(Number(skip)) || skip < 0 ? 0 : Number(skip);
         limit = Number.isNaN(Number(limit)) || limit < 1 || limit > 1000 ? 20 : Number(limit);
         return await model.find(query, select).sort(sort).skip(skip).limit(limit).lean();
     }
-    async $listPaging(model, query = {}, sort = {}, pageIndex = 0, limit = 20, select = {}) {
+    static async $listPaging(model, query = {}, sort = {}, pageIndex = 0, limit = 20, select = {}) {
         pageIndex = Number.isNaN(Number(pageIndex)) || pageIndex < 1 ? 0 : Number(pageIndex) - 1;
         limit = Number.isNaN(Number(limit)) || limit < 1 || limit > 1000 ? 20 : Number(limit);
         const options = {
@@ -105,7 +105,7 @@ class MongoFuncHelper {
         };
         return await model.paginate(query, options);
     }
-    async $findOne(model, filter, isWithOutCheckDelete = false, select = {}) {
+    static async $findOne(model, filter, isWithOutCheckDelete = false, select = {}) {
         if (!isWithOutCheckDelete) {
             filter.$isDeleted = { $ne: true };
         }
@@ -117,7 +117,7 @@ class MongoFuncHelper {
             return {};
         return data || {};
     }
-    async $findOneAndSort(model, filter, isWithOutCheckDelete = false, sorting = {}, select = {}) {
+    static async $findOneAndSort(model, filter, isWithOutCheckDelete = false, sorting = {}, select = {}) {
         const result = await model.findOne(filter, select).sort(sorting);
         if (!result || lodash_1.default.isEmpty(result))
             return {};
@@ -126,7 +126,7 @@ class MongoFuncHelper {
             return {};
         return data || {};
     }
-    async $getLastItem(model) {
+    static async $getLastItem(model) {
         const result = await model.findOne({}).sort({ _id: -1 });
         if (!result || lodash_1.default.isEmpty(result))
             return {};
@@ -135,17 +135,17 @@ class MongoFuncHelper {
             return {};
         return data || {};
     }
-    async $aggregate(model, aggregateFilters = []) {
+    static async $aggregate(model, aggregateFilters = []) {
         return model.aggregate(aggregateFilters);
     }
-    async $aggregatePaging(model, aggregateFilters = [], options = { page: 1, limit: 10 }) {
+    static async $aggregatePaging(model, aggregateFilters = [], options = { page: 1, limit: 10 }) {
         const aggregate = await model.aggregate(aggregateFilters);
         return model.aggregatePaginate(aggregate, options);
     }
-    async $findByListId(model, listId, sort = {}, select = {}) {
+    static async $findByListId(model, listId, sort = {}, select = {}) {
         return await model.find({ _id: { $in: listId.map(id => new mongoose_1.Types.ObjectId(id)) } }, select).sort(sort);
     }
-    async $setIsActive(model, _id, isActive) {
+    static async $setIsActive(model, _id, isActive) {
         const result = await model.updateOne({ _id }, { $set: { isActive } });
         return {
             ok: result.acknowledged ? 1 : 0,
@@ -153,7 +153,7 @@ class MongoFuncHelper {
             nModified: result.modifiedCount,
         };
     }
-    async $setIsDelete(model, _id, isDelete) {
+    static async $setIsDelete(model, _id, isDelete) {
         const result = await model.updateOne({ _id }, { $set: { isDelete } });
         return {
             ok: result.acknowledged ? 1 : 0,
@@ -161,7 +161,7 @@ class MongoFuncHelper {
             nModified: result.modifiedCount,
         };
     }
-    async $getByCode(model, code, select = {}, isWithOutCheckDelete = false) {
+    static async $getByCode(model, code, select = {}, isWithOutCheckDelete = false) {
         const filter = { code: new RegExp(`^${code}$`, "i") };
         const result = await model.findOne(filter, select);
         if (!result || lodash_1.default.isEmpty(result))
@@ -171,17 +171,17 @@ class MongoFuncHelper {
             return {};
         return data || {};
     }
-    async $getAllDeleteItems(model, filter = {}, sort = {}) {
+    static async $getAllDeleteItems(model, filter = {}, sort = {}) {
         filter.$isDeleted = true;
         return await model.find(filter, sort);
     }
-    async $count(model, filter = {}) {
+    static async $count(model, filter = {}) {
         return await model.countDocuments(filter);
     }
-    async $saveMany(model, listItem) {
+    static async $saveMany(model, listItem) {
         return await model.insertMany(listItem);
     }
-    async $updateMany(model, filterObj, setObj, options = {}) {
+    static async $updateMany(model, filterObj, setObj, options = {}) {
         const result = await model.updateMany(filterObj, setObj, options);
         return {
             ok: result.acknowledged ? 1 : 0,
@@ -189,7 +189,7 @@ class MongoFuncHelper {
             nModified: result.modifiedCount,
         };
     }
-    convertToMongoId(params) {
+    static convertToMongoId(params) {
         if (lodash_1.default.isArray(params)) {
             return params.map(id => new mongoose_1.Types.ObjectId(id));
         }
@@ -198,10 +198,10 @@ class MongoFuncHelper {
         }
         return params;
     }
-    async $findOneAndUpdate(model, filterObj, setObj, options = {}) {
+    static async $findOneAndUpdate(model, filterObj, setObj, options = {}) {
         return await model.findOneAndUpdate(filterObj, setObj, options);
     }
-    async $deleteMany(model, filterObj, options = {}) {
+    static async $deleteMany(model, filterObj, options = {}) {
         const result = await model.deleteMany(filterObj, options);
         return {
             n: result.acknowledged ? 1 : 0,
@@ -209,7 +209,7 @@ class MongoFuncHelper {
             deletedCount: result.deletedCount,
         };
     }
-    async $deleteOne(model, filterObj, options = {}) {
+    static async $deleteOne(model, filterObj, options = {}) {
         const result = await model.deleteOne(filterObj, options);
         return {
             n: result.acknowledged ? 1 : 0,
@@ -217,7 +217,7 @@ class MongoFuncHelper {
             deletedCount: result.deletedCount,
         };
     }
-    async $distinct(model, field, filterObj = {}) {
+    static async $distinct(model, field, filterObj = {}) {
         return model.distinct(field, filterObj);
     }
 }
