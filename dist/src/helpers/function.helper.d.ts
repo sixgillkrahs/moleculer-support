@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-declare class FunctionHelper {
+export default class FunctionHelper {
     /** Convert string to unicode
      * @param str string value
      * @output string result
@@ -62,7 +62,7 @@ declare class FunctionHelper {
     replaceString(str: string, strRep: string, repStr: string): string;
     getFirstCharsOfString(str: string): string;
     trimDynamic(obj: any): any;
-    getCurrentDateByFormat(date?: number, dateFm?: string): string;
+    getCurrentDateByFormat(date?: number, dateFm?: string): Promise<string>;
     convertToDate(inputParams: string | number): Date | null;
     convertStringToDate(strDate: string, typeFrm?: string): Date | null;
     convertStringToNumber(strNum: string): number | null;
@@ -70,7 +70,7 @@ declare class FunctionHelper {
     validateEmailAddress(email: string): boolean;
     validPhoneNumber(strPhone: string): boolean;
     convertStringToPhone(strPhone: string): string;
-    getDateStringFormat(date?: number | Date | null): string;
+    getDateStringFormat(date?: number | Date | null): Promise<string>;
     translateContent(contentObj: any, languageCode?: string): any;
     convertToMongoId(params: string | string[]): mongoose.Types.ObjectId | mongoose.Types.ObjectId[];
     isEmpty(inputValue: any): boolean;
@@ -78,4 +78,3 @@ declare class FunctionHelper {
     isPhoneNumber(value: string): boolean;
     getFullTextAddress(province: any, district: any, ward: any, address: string): string;
 }
-export default FunctionHelper;

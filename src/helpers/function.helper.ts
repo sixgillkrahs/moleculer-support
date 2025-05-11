@@ -1,12 +1,11 @@
-const locationResource = require("../defined/locations");
-
+import { LIST_DISTRICT, LIST_PROVINCE, LIST_WARD } from '../defined/locations'
 import randomize from 'randomatic';
 import jsonDiff from 'json-diff';
 import _ from 'lodash'
 import mongoose from 'mongoose';
 import dateFrm from 'dateformat'
 
-class FunctionHelper {
+export default class FunctionHelper {
     /** Convert string to unicode
      * @param str string value
      * @output string result
@@ -186,8 +185,9 @@ class FunctionHelper {
     }
 
     // Get current date format from date timestamp value
-    getCurrentDateByFormat(date: number = Date.now(), dateFm: string = "yyyymmdd-hhMMss"): string {
+    async getCurrentDateByFormat(date: number = Date.now(), dateFm: string = "yyyymmdd-hhMMss"): Promise<string> {
         try {
+            const dateFrm = (await import("dateformat")).default;
             return dateFrm(date, dateFm);
         } catch (e) {
             return "";
@@ -285,21 +285,21 @@ class FunctionHelper {
     }
 
     // Get date string format
-    getDateStringFormat(date: number | Date | null = null): string {
-        if (date === null) {
-            return "";
-        }
+    async getDateStringFormat(date: number | Date | null = null): Promise<string> {
+        try {
+            const dateFrm = (await import('dateformat')).default;
+            if (date === null) return '';
 
-        if (_.isNumber(date)) {
-            return dateFrm(new Date(date), "yymdhMs");
-        }
+            if (_.isNumber(date)) return dateFrm(new Date(date), 'yymdhMs');
+            if (_.isDate(date)) return dateFrm(date, 'yymdhMs');
 
-        if (_.isDate(date)) {
-            return dateFrm(date, "yymdhMs");
+            return '';
+        } catch (e) {
+            console.error(e);
+            return '';
         }
-
-        return "";
     }
+
 
     // Set content child properties by language code
     translateContent(contentObj: any, languageCode: string = "vi"): any {
@@ -379,17 +379,17 @@ class FunctionHelper {
         let wardText = ward;
 
         if (_.isNumber(province) && province > 0) {
-            const provinceObj = locationResource.LIST_PROVINCE.find((x: any) => x.id === province);
+            const provinceObj = LIST_PROVINCE.find((x: any) => x.id === province);
             provinceText = provinceObj ? provinceObj.name : "";
         }
 
         if (_.isNumber(district) && district > 0) {
-            const districtObj = locationResource.LIST_DISTRICT.find((x: any) => x.id === district);
+            const districtObj = LIST_DISTRICT.find((x: any) => x.id === district);
             districtText = districtObj ? districtObj.name : "";
         }
 
         if (_.isNumber(ward) && ward > 0) {
-            const wardObj = locationResource.LIST_WARD.find((x: any) => x.id === ward);
+            const wardObj = LIST_WARD.find((x: any) => x.id === ward);
             wardText = wardObj ? wardObj.name : "";
         }
 
@@ -403,5 +403,3 @@ class FunctionHelper {
 
 
 }
-
-export default FunctionHelper;
