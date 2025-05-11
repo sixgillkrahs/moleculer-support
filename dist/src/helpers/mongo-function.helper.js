@@ -107,13 +107,13 @@ class MongoFuncHelper {
     }
     static async $findOne(model, filter, isWithOutCheckDelete = false, select = {}) {
         if (!isWithOutCheckDelete) {
-            filter.$isDeleted = { $ne: true };
+            filter.isDelete = { $ne: true };
         }
         const result = await model.findOne(filter, select);
         if (!result || lodash_1.default.isEmpty(result))
             return {};
         const data = result.toObject();
-        if (Boolean(data.$isDeleted) === true && !isWithOutCheckDelete)
+        if (data.isDelete && !isWithOutCheckDelete)
             return {};
         return data || {};
     }
@@ -122,7 +122,7 @@ class MongoFuncHelper {
         if (!result || lodash_1.default.isEmpty(result))
             return {};
         const data = result.toObject();
-        if (Boolean(data.$isDeleted) === true && !isWithOutCheckDelete)
+        if (data.isDelete && !isWithOutCheckDelete)
             return {};
         return data || {};
     }
@@ -131,7 +131,7 @@ class MongoFuncHelper {
         if (!result || lodash_1.default.isEmpty(result))
             return {};
         const data = result.toObject();
-        if (Boolean(data.$isDeleted) === true)
+        if (data.isDelete)
             return {};
         return data || {};
     }
@@ -167,7 +167,7 @@ class MongoFuncHelper {
         if (!result || lodash_1.default.isEmpty(result))
             return {};
         const data = result.toObject();
-        if (Boolean(data.$isDeleted) === true && !isWithOutCheckDelete)
+        if (data.isDelete && !isWithOutCheckDelete)
             return {};
         return data || {};
     }

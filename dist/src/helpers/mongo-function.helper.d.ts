@@ -16,9 +16,15 @@ declare class MongoFuncHelper {
     static $getById<T extends Document>(model: Model<T>, _id: any, isWithOutCheckDelete?: boolean, select?: any): Promise<any>;
     static $list<T extends Document>(model: Model<T>, query?: FilterQuery<T>, sort?: any, skip?: number, limit?: number, select?: any): Promise<any[]>;
     static $listPaging<T extends Document>(model: any, query?: FilterQuery<T>, sort?: any, pageIndex?: number, limit?: number, select?: any): Promise<any>;
-    static $findOne<T extends Document>(model: Model<T>, filter: FilterQuery<T>, isWithOutCheckDelete?: boolean, select?: any): Promise<any>;
-    static $findOneAndSort<T extends Document>(model: Model<T>, filter: FilterQuery<T>, isWithOutCheckDelete?: boolean, sorting?: any, select?: any): Promise<any>;
-    static $getLastItem<T extends Document>(model: Model<T>): Promise<any>;
+    static $findOne<T extends Document & {
+        isDelete?: boolean;
+    }>(model: Model<T>, filter: FilterQuery<T>, isWithOutCheckDelete?: boolean, select?: any): Promise<any>;
+    static $findOneAndSort<T extends Document & {
+        isDelete?: boolean;
+    }>(model: Model<T>, filter: FilterQuery<T>, isWithOutCheckDelete?: boolean, sorting?: any, select?: any): Promise<any>;
+    static $getLastItem<T extends Document & {
+        isDelete?: boolean;
+    }>(model: Model<T>): Promise<any>;
     static $aggregate<T extends Document>(model: Model<T>, aggregateFilters?: any[]): Promise<any[]>;
     static $aggregatePaging<T extends Document>(model: any, aggregateFilters?: any[], options?: any): Promise<any>;
     static $findByListId<T extends Document>(model: Model<T>, listId: string[], sort?: any, select?: any): Promise<T[]>;
@@ -32,7 +38,9 @@ declare class MongoFuncHelper {
         n: number;
         nModified: number;
     }>;
-    static $getByCode<T extends Document>(model: Model<T>, code: string, select?: any, isWithOutCheckDelete?: boolean): Promise<any>;
+    static $getByCode<T extends Document & {
+        isDelete?: boolean;
+    }>(model: Model<T>, code: string, select?: any, isWithOutCheckDelete?: boolean): Promise<any>;
     static $getAllDeleteItems<T extends Document>(model: Model<T>, filter?: FilterQuery<T>, sort?: any): Promise<T[]>;
     static $count<T extends Document>(model: Model<T>, filter?: FilterQuery<T>): Promise<number>;
     static $saveMany<T extends Document>(model: Model<T>, listItem: Partial<T>[]): Promise<HydratedDocument<T>[]>;

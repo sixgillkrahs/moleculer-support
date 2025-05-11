@@ -79,30 +79,30 @@ class MongoFuncHelper {
         return await model.paginate(query, options);
     }
 
-    static async $findOne<T extends Document>(model: Model<T>, filter: FilterQuery<T>, isWithOutCheckDelete = false, select: any = {}): Promise<any> {
+    static async $findOne<T extends Document & { isDelete?: boolean }>(model: Model<T>, filter: FilterQuery<T>, isWithOutCheckDelete = false, select: any = {}): Promise<any> {
         if (!isWithOutCheckDelete) {
-            filter.$isDeleted = { $ne: true } as any;
+            filter.isDelete = { $ne: true } as any;
         }
         const result = await model.findOne(filter, select);
         if (!result || _.isEmpty(result)) return {};
         const data = result.toObject();
-        if (Boolean(data.$isDeleted) === true && !isWithOutCheckDelete) return {};
+        if (data.isDelete && !isWithOutCheckDelete) return {};
         return data || {};
     }
 
-    static async $findOneAndSort<T extends Document>(model: Model<T>, filter: FilterQuery<T>, isWithOutCheckDelete = false, sorting: any = {}, select: any = {}): Promise<any> {
+    static async $findOneAndSort<T extends Document & { isDelete?: boolean }>(model: Model<T>, filter: FilterQuery<T>, isWithOutCheckDelete = false, sorting: any = {}, select: any = {}): Promise<any> {
         const result = await model.findOne(filter, select).sort(sorting);
         if (!result || _.isEmpty(result)) return {};
         const data = result.toObject();
-        if (Boolean(data.$isDeleted) === true && !isWithOutCheckDelete) return {};
+        if (data.isDelete && !isWithOutCheckDelete) return {};
         return data || {};
     }
 
-    static async $getLastItem<T extends Document>(model: Model<T>): Promise<any> {
+    static async $getLastItem<T extends Document & { isDelete?: boolean }>(model: Model<T>): Promise<any> {
         const result = await model.findOne({}).sort({ _id: -1 });
         if (!result || _.isEmpty(result)) return {};
         const data = result.toObject();
-        if (Boolean(data.$isDeleted) === true) return {};
+        if (data.isDelete) return {};
         return data || {};
     }
 
@@ -137,12 +137,12 @@ class MongoFuncHelper {
         };
     }
 
-    static async $getByCode<T extends Document>(model: Model<T>, code: string, select: any = {}, isWithOutCheckDelete = false): Promise<any> {
+    static async $getByCode<T extends Document & { isDelete?: boolean }>(model: Model<T>, code: string, select: any = {}, isWithOutCheckDelete = false): Promise<any> {
         const filter = { code: new RegExp(`^${code}$`, "i") } as FilterQuery<T>;
         const result = await model.findOne(filter, select);
         if (!result || _.isEmpty(result)) return {};
         const data = result.toObject();
-        if (Boolean(data.$isDeleted) === true && !isWithOutCheckDelete) return {};
+        if (data.isDelete && !isWithOutCheckDelete) return {};
         return data || {};
     }
 

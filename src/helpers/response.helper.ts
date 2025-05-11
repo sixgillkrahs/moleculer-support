@@ -1,25 +1,5 @@
 import { STATE, INTERNAL_CODES, HTTP_STATUS_CODES } from "../defined/state-code";
-
-interface DefinedCode {
-    CODE: number;
-    MESSAGE: {
-        [key: string]: string;
-    };
-    STATUS_CODE?: number;
-}
-
-interface ResponseObj {
-    code: number;
-    state?: number;
-    data: any;
-    message: string;
-}
-
-interface GatewayResponse {
-    code: number;
-    data: any;
-    message: string;
-}
+import { DefinedCode, ResponseObj, GatewayResponse } from "../interfaces";
 
 class ResponseHelper {
     /** Processing result return to publish actions */
